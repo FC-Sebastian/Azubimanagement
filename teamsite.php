@@ -7,7 +7,7 @@ include "header.php";
 <div class="teamboxes">
     <?php foreach($allazubi as $azu):?>
         <div class="teambox" >
-            <a href="http://localhost/mysite.php?id=<?php echo $azu["id"]?>">
+            <a href="<?php echo getUrl("mysite.php")?>?id=<?php echo $azu["id"]?>">
                 <img class="teampic" src=<?php echo getPictureUrl($azu["pictureurl"])?>
                 >
             </a>

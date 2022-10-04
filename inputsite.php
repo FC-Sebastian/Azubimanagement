@@ -1,7 +1,7 @@
 <?php
+include "functions.php";
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
-include "functions.php";
 $title = "new Azubi";
 $con = getDatabaseConnection();
 $azubidata = getAzubiData($con);
@@ -76,7 +76,7 @@ include "header.php";
     <div class="azubilinks">
         <table id="inputtable">
             <tr>
-                <th colspan="2"><a href="http://localhost/inputsite.php">New Azubi</a></th>
+                <th colspan="2"><a href="<?php echo getUrl("inputsite.php") ?>">New Azubi</a></th>
             </tr>
             <tr>
             <?php
@@ -90,14 +90,14 @@ include "header.php";
                         endif;
                         ?>
                     <td>
-                        <a href="http://localhost/inputsite.php?id=<?php echo $adata["id"]?>"><?php echo $adata["name"]?></a>
+                        <a href="<?php echo getUrl("inputsite.php") ?>?id=<?php echo $adata["id"]?>"><?php echo $adata["name"]?></a>
                     </td>
                 <?php
                 $jimmy++;
                 endforeach;
                 ?>
             <tr>
-                <th colspan="2"><a href="http://localhost/teameditsite.php">Team</a></th>
+                <th colspan="2"><a href="<?php echo getUrl("teameditsite.php") ?>">Team</a></th>
             </tr>
         </table>
     </div>

@@ -17,10 +17,10 @@ function getRequestParameter($key,$default = false)
     return $default;
 }
 
-function getPictureUrl($url)
+function getPictureUrl($filename)
 {
-    if (!empty($url)) {
-        return $url;
+    if (!empty($filename)) {
+        return getUrl("")."pics/".$filename;
     }
     return "https://secure.gravatar.com/avatar/cb665e6a65789619c27932fc7b51f8dc?default=mm&size=200&rating=G";
 }
@@ -225,12 +225,12 @@ function uploadPictureGetLocation ()
     $tmppath = $_FILES["pictureurl"]["tmp_name"];
     $name = $_FILES["pictureurl"]["name"];
     $type = $_FILES["pictureurl"]["type"];
-    $locationbegin = 'C:\xampp\htdocs\pics\\';
+    $locationbegin = 'C:\xampp\htdocs\azubimanagement\pics\\';
     $location = $locationbegin . $name;
     $allowed = ["image/jpeg","image/png","image/gif","image/svg+xml","image/jpg","	image/webp"];
     if (in_array($type,$allowed)){
         move_uploaded_file($tmppath, $location);
-        $usablelocation = "http://localhost/pics/".$name;
+        $usablelocation = "http://localhost/azubimanagement/pics/".$name;
         return $usablelocation;
     }
     return null;
@@ -316,4 +316,9 @@ function addSaltGetMD5($password)
     $saltypassword = "ieatbananasuuusogoodsotatsyyummyummyu3%#BuZmjG8B9KRL8lmxFPn1*34qS39R8gdM5l8%49#UuR6&Zctestpassword21.11.1999".$password."mynameRoteBlumen77m2D\$r9NIC9%u%E%9p#Tj@wgp8jn1hm57tbw&t&CXk%Lo@BnD2N";
     $saltypassword = md5($saltypassword);
     return $saltypassword;
+}
+
+function getUrl($sitename)
+{
+    return "http://localhost/azubimanagement/".$sitename;
 }

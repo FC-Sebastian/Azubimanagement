@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION["logintime"])){
-    header("location: http://localhost/loginsite.php");
+    header("location: ".getUrl("loginsite.php"));
 }
 if (isset($_SESSION["logintime"])){
     if ((time() - $_SESSION["logintime"]) >= 300){

@@ -9,7 +9,7 @@ $pararray = ["name","birthday","email",
 if (getRequestParameter("pass") === getRequestParameter("confpass") && getRequestParameter("pass") !== false){
     $password = addSaltGetMD5(getRequestParameter("pass"));
 } else {
-    header("location: http://localhost/inputsite.php?passmismatch=1&id=".getRequestParameter("id"));
+    header("location: ".getUrl("inputsite.php")."?passmismatch=1&id=".getRequestParameter("id"));
     exit();
 }
 if (!empty(getRequestParameter("delete")) && getRequestParameter("delete") == "on"){

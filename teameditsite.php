@@ -1,7 +1,7 @@
 <?php
+include "functions.php";
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
-include "functions.php";
 $title = "back-end liste";
 include "header.php";
 $con = getDatabaseConnection();
@@ -31,17 +31,17 @@ $pagemax2 = $pagemax;
             <tr class="colored">
                 <th class="borderboys" class="header"></th>
                 <th class="borderboys" class="header">
-                    <a href="http://localhost/teameditsite.php?order=name&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=name&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
                         Name
                     </a>
                 </th>
                 <th class="borderboys" class="header">
-                    <a href="http://localhost/teameditsite.php?order=birthday&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=birthday&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
                         Geburtstag
                     </a>
                 </th>
                 <th class="borderboys" class="header">
-                    <a href="http://localhost/teameditsite.php?order=email&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=email&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
                         E-Mail
                     </a>
                 </th>
@@ -69,10 +69,10 @@ $pagemax2 = $pagemax;
                 </td>
                 <td class="borderboys" class="textboy">
                     <a class="linkpic" href="inputsite.php?id=<?php echo getValueIfIsset($azubidata,"id")?>">
-                        <img src="http://localhost/pics/iconmonstr-pencil-14.svg">
+                        <img src="<?php echo getUrl("")?>pics/iconmonstr-pencil-14.svg">
                     </a>
                     <a class="linkpic" href="teamedit.php?delete=<?php echo getValueIfIsset($azubidata,"id")?>&dropdown=<?php echo $limit?>">
-                        <img src="http://localhost/pics/iconmonstr-trash-can-29.svg">
+                        <img src="<?php echo getUrl("")?>pics/iconmonstr-trash-can-29.svg">
                     </a>
                 </td>
             </tr>
@@ -100,8 +100,8 @@ $pagemax2 = $pagemax;
             <tr>
                 <td>
                     <?php if ($page >= 2):?>
-                        <a href="http://localhost/teameditsite.php?page=<?php echo ($page - 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
-                            <img id="left" src="http://localhost/pics/iconmonstr-caret-left-filled.svg">
+                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page - 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                            <img id="left" src="<?php echo getUrl("")?>pics/iconmonstr-caret-left-filled.svg">
                         </a>
                     <?php endif;?>
                 </td>
@@ -120,8 +120,8 @@ $pagemax2 = $pagemax;
                 </td>
                 <td>
                     <?php if ($page < $pagemax2):?>
-                        <a href="http://localhost/teameditsite.php?page=<?php echo ($page + 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
-                            <img id="right" src="http://localhost/pics/iconmonstr-caret-right-filled.svg">
+                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page + 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                            <img id="right" src="<?php echo getUrl("")?>pics/iconmonstr-caret-right-filled.svg">
                         </a>
                     <?php endif;?>
                 </td>

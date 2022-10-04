@@ -8,9 +8,9 @@ $hashpass = addSaltGetMD5(getRequestParameter("loginpass"));
 if (validateAzubiLogin($con,getRequestParameter("loginemail"),$hashpass)){
     $_SESSION["logintime"] = time();
     if (isset($_SESSION["origin"])){
-        header("location: http://localhost".$_SESSION["origin"]);
+        header("location: ".getUrl("").str_replace("azubimanagement/","",$_SESSION["origin"]));
     } else {
-        header("location: http://localhost/teameditsite.php");
+        header("location: ".getUrl("teameditsite.php"));
     }
 }
 include "header.php";
