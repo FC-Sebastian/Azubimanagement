@@ -1,7 +1,7 @@
 <?php
 include "functions.php";
 $con = getDatabaseConnection();
-$azubidata = getAzubiData($con,false,false,0);
+$azubidata = getAzubiData($con);
 $bigid = getBiggestAzubiID($azubidata);
 
 if (!empty(getRequestParameter("delete"))){
@@ -9,7 +9,7 @@ if (!empty(getRequestParameter("delete"))){
     getLocationStringAndRedirect(1,getRequestParameter("dropdown"),getRequestParameter("lastsearch"),getRequestParameter("order"),getRequestParameter("orderdir"));
 }
 if (!empty(getRequestParameter("newazubi"))){
-    header("location: inputsite.php");
+    header("location: ".getUrl("inputsite.php"));
 }
 if (false !== (getRequestParameter("deletearray"))) {
     foreach (getRequestParameter("deletearray") as $id){

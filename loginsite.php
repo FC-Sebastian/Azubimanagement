@@ -16,7 +16,7 @@ if (validateAzubiLogin($con,getRequestParameter("loginemail"),$hashpass)){
 include "header.php";
 ?>
 <div id="logindiv">
-    <form method="post" action="loginsite.php">
+    <form method="post" action="<?php echo getUrl("loginsite.php")?>">
         <table id="logintable">
             <tr>
                 <th colspan="2">

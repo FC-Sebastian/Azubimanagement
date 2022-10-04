@@ -1,7 +1,8 @@
 <?php
 function getDatabaseConnection()
 {
-    $connection = mysqli_connect("localhost", "root",null,"test");
+    $sqlarray=getConfigParameter("MySQL");
+    $connection = mysqli_connect($sqlarray["hostname"], $sqlarray["username"],$sqlarray["password"],$sqlarray["database"]);
     if (mysqli_connect_errno()) {
         echo "fail ".mysqli_connect_error();
         exit();
@@ -20,7 +21,7 @@ function getRequestParameter($key,$default = false)
 function getPictureUrl($filename)
 {
     if (!empty($filename)) {
-        return getUrl("")."pics/".$filename;
+        return getConfigParameter("url")."pics/".$filename;
     }
     return "https://secure.gravatar.com/avatar/cb665e6a65789619c27932fc7b51f8dc?default=mm&size=200&rating=G";
 }
@@ -93,9 +94,9 @@ function getInsertQuery($array,$azubiid,$password)
     $queryend = ") VALUES ( '" .$azubiid. "'";
     foreach ($array as $key){
         if ($key == "pictureurl"){
-            if (!empty(uploadPictureGetLocation())){
+            if (!empty(uploadPictureGetFilename())){
                 $querybegin .= ", ".$key;
-                $queryend .= ", '".uploadPictureGetLocation()."'";
+                $queryend .= ", '".uploadPictureGetFilename()."'";
             }
         } elseif ($key == "password"){
             $querybegin .= ", ".$key;
@@ -145,8 +146,8 @@ function getUpdateQuery($array,$azubiid,$password)
     $queryend = "WHERE id = ".$azubiid;
     foreach ($array as $key){
         if ($key == "pictureurl"){
-            if (!empty(uploadPictureGetLocation())){
-                $querymid .= $key."="."'".uploadPictureGetLocation()."',";
+            if (!empty(uploadPictureGetFilename())){
+                $querymid .= $key."="."'".uploadPictureGetFilename()."',";
             }
         } elseif ($key == "password"){
             $querymid .= $key."="."'".$password."',";
@@ -220,18 +221,17 @@ function executeMySQLQuery($connection,$query)
     return $result;
 }
 
-function uploadPictureGetLocation ()
+function uploadPictureGetFilename ()
 {
     $tmppath = $_FILES["pictureurl"]["tmp_name"];
     $name = $_FILES["pictureurl"]["name"];
     $type = $_FILES["pictureurl"]["type"];
-    $locationbegin = 'C:\xampp\htdocs\azubimanagement\pics\\';
+    $locationbegin = __DIR__.'/pics/';
     $location = $locationbegin . $name;
     $allowed = ["image/jpeg","image/png","image/gif","image/svg+xml","image/jpg","	image/webp"];
     if (in_array($type,$allowed)){
         move_uploaded_file($tmppath, $location);
-        $usablelocation = "http://localhost/azubimanagement/pics/".$name;
-        return $usablelocation;
+        return $name;
     }
     return null;
 }
@@ -282,7 +282,7 @@ function getGetParameter($key,$default = false)
 
 function getLocationStringAndRedirect($page = false,$dropdown = false,$search = false,$order = false,$orderdirection = false)
 {
-    $locationstring = "location: teameditsite.php?";
+    $locationstring = "location: ".getConfigParameter("url")."teameditsite.php?";
     if (false !== $page){
         $locationstring .= "page=".$page;
     }
@@ -313,12 +313,22 @@ function validateAzubiLogin($connection,$email,$password)
 
 function addSaltGetMD5($password)
 {
-    $saltypassword = "ieatbananasuuusogoodsotatsyyummyummyu3%#BuZmjG8B9KRL8lmxFPn1*34qS39R8gdM5l8%49#UuR6&Zctestpassword21.11.1999".$password."mynameRoteBlumen77m2D\$r9NIC9%u%E%9p#Tj@wgp8jn1hm57tbw&t&CXk%Lo@BnD2N";
-    $saltypassword = md5($saltypassword);
-    return $saltypassword;
+    return md5(getConfigParameter("salt").$password);
 }
 
-function getUrl($sitename)
+function getUrl($sitename = "")
 {
-    return "http://localhost/azubimanagement/".$sitename;
+    return getConfigParameter("url").$sitename;
+}
+
+function getConfigParameter ($key)
+{
+    if (file_exists("config.php")){
+        include "config.php";
+    } else {
+        exit("Keine config.php gefunden");
+    }
+    if (isset($configarray[$key])){
+        return $configarray[$key];
+    }
 }

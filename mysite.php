@@ -20,7 +20,7 @@ include "header.php"
 ?>
 <div class="top">
     <a href="https://www.fatchip.de/" target="_blank">
-        <img id="logo" src="fatchip-logo.svg" alt="Logo fehlt">
+        <img id="logo" src="<?php echo getUrl("pics/fatchip-logo.svg")?>" alt="Logo fehlt">
     </a>
         <img id="pic" src=<?php echo getPictureUrl($azubidata["pictureurl"]) ?>>
         <br><br><br>
@@ -37,9 +37,7 @@ include "header.php"
         <?php endif?>
         <?php if (!empty($azubidata["githubuser"])):?>
             <div >GitHub:
-                <a id="github" href=<?php echo $azubidata["githubuserlink"]?> target="_blank">
                     <?php echo $azubidata["githubuser"]?>
-                </a>
             </div>
         <?php endif?>
         <div id="since" > <?php echo timeSince($employmentstart)?> </div>
@@ -66,7 +64,7 @@ include "header.php"
             </ul>
         <?php endif; ?>
         <div id="timeedit">
-            <a href="inputsite.php?id=<?php echo getValueIfIsset($azubidata,"id")?>">edit <?php echo getValueIfIsset($azubidata,"name")?></a>
+            <a href="<?php getUrl("inputsite.php")?>?id=<?php echo getValueIfIsset($azubidata,"id")?>">edit <?php echo getValueIfIsset($azubidata,"name")?></a>
             <div><?php echo date("d.m.y G:i");?></div>
         </div>
     </div>

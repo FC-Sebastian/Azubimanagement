@@ -9,7 +9,7 @@
             echo $title;
         ?>
     </title>
-    <link rel ="stylesheet" href ="Style.css">
+    <link rel ="stylesheet" href ="<?php echo getUrl("style.css")?>">
 </head>
     <body>
         <div class="all">

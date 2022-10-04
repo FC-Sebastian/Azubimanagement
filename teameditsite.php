@@ -21,7 +21,7 @@ $ddoptions = [1,5,10,20];
 $azubidata = getAzubiData($con,false,"*",getRequestParameter("order"),getRequestParameter("orderdir"),getRequestParameter("search"),$limit,$offset);
 $pagemax2 = $pagemax;
 ?>
-<form action="teamedit.php" method="post">
+<form action="<?php echo getUrl("teamedit.php")?>" method="post">
     <div class="teamedit">
         <div id="searchbar">
             <input id="bar" type="search" name="search">
@@ -68,7 +68,7 @@ $pagemax2 = $pagemax;
                     ?>
                 </td>
                 <td class="borderboys" class="textboy">
-                    <a class="linkpic" href="inputsite.php?id=<?php echo getValueIfIsset($azubidata,"id")?>">
+                    <a class="linkpic" href="<?php echo getUrl("inputsite.php")?>?id=<?php echo getValueIfIsset($azubidata,"id")?>">
                         <img src="<?php echo getUrl("")?>pics/iconmonstr-pencil-14.svg">
                     </a>
                     <a class="linkpic" href="teamedit.php?delete=<?php echo getValueIfIsset($azubidata,"id")?>&dropdown=<?php echo $limit?>">

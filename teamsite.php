@@ -24,9 +24,7 @@ include "header.php";
                     <?php endif;
                     if (!empty($azu["githubuser"])):?>
                         <li>
-                            <a href="<?php echo $azu["githubuserlink"];?>" target="_blank">
-                                <?php echo $azu["githubuser"];?>
-                            </a>
+                            <?php echo $azu["githubuser"];?>
                         </li>
                     <?php endif;?>
                 </ul>

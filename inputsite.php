@@ -18,7 +18,7 @@ if (!empty($azubiid)){
 }
 include "header.php";
 ?>
-<form action="newazu.php" enctype='multipart/form-data' method="post">
+<form action="<?php echo getUrl("newazu.php")?>" enctype='multipart/form-data' method="post">
     <input id="hideme" type="hidden" name="id" value="<?php echo $azubiid?>">
     <div class="azuinfo">
         <h1>
@@ -46,10 +46,6 @@ include "header.php";
         <div>
             <label for="githubuser">GitHub username: </label>
             <input type="text" name="githubuser" value="<?php echo getValueIfIsset($curazubidata,"githubuser")?>"><br>
-        </div>
-        <div>
-            <label for="githubuserlink">GitHublink: </label>
-            <input type="text" name="githubuserlink" value="<?php echo getValueIfIsset($curazubidata,"githubuserlink")?>"><br>
         </div>
         <div>
             <label for="employmentstart">Employed since: </label>
