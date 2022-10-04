@@ -1,0 +1,4 @@
+AuthName "Bitte User und Passwort eingeben"
+AuthUserFile C:\xampp\htdocs\.htpasswd
+AuthType Basic
+Require valid-user
