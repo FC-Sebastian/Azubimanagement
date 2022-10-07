@@ -3,13 +3,14 @@
 <head>
     <title>
         <?php
-            if (!isset($title)){
-                $title="Azubi-Team";
-            }
-            echo $title;
+        if (!isset($title)) {
+            $title = "Azubi-Team";
+        }
+        echo $title;
         ?>
     </title>
-    <link rel ="stylesheet" href ="<?php echo getUrl("style.css")?>">
+    <link rel="stylesheet" href="<?php
+    echo getUrl("style.css") ?>">
 </head>
-    <body>
-        <div class="all">
+<body>
+    <div class="all">

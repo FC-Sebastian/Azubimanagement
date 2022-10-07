@@ -1,4 +1,5 @@
 <?php
+
 //rename this file to: config.php
 $configarray = [
     "salt" => "YOUR VALUE HERE",
