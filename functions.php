@@ -1,36 +1,7 @@
 <?php
-function getDatabaseConnection()
-{
-    $sqlarray=getConfigParameter("MySQL");
-    $connection = mysqli_connect($sqlarray["hostname"], $sqlarray["username"],$sqlarray["password"],$sqlarray["database"]);
-    if (mysqli_connect_errno()) {
-        echo "fail ".mysqli_connect_error();
-        exit();
-    }
-    return $connection;
-}
-
-function getRequestParameter($key,$default = false)
-{
-    if (isset($_REQUEST[$key])){
-        return $_REQUEST[$key];
-    }
-    return $default;
-}
-
-function getPictureUrl($filename)
-{
-    if (!empty($filename)) {
-        return getConfigParameter("url")."pics/".$filename;
-    }
-    return "https://secure.gravatar.com/avatar/cb665e6a65789619c27932fc7b51f8dc?default=mm&size=200&rating=G";
-}
-
-function getSkillsByType($connection, $azubiid, $type)
-{
-    $result = executeMySQLQuery($connection,"SELECT skill FROM azubi_skills WHERE azubi_id = $azubiid AND type = '$type'");
-    return mysqli_fetch_all($result,MYSQLI_ASSOC);
-}
+include "classes/azubi.php";
+include "classes/conf.php";
+include "classes/dbconnection.php";
 
 function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = false, $orderdir = 0,$search = false, $limit = false, $offset = 0)
 {
@@ -54,9 +25,86 @@ function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = fa
     }
     $query .= ";";
     $result = executeMySQLQuery($connection,$query);
-    return mysqli_fetch_all($result,MYSQLI_ASSOC);
+    $array = mysqli_fetch_all($result,MYSQLI_ASSOC);
+    $objectarray = [];
+    foreach ($array as $azu){
+        $azubi = new azubi(
+            $azu["id"],
+            $azu["name"],
+            $azu["birthday"],
+            $azu["email"],
+            $azu["githubuser"],
+            $azu["employmentstart"],
+            $azu["pictureurl"],
+            $azu["password"]);
+        $objectarray[] = $azubi;
+    }
+    return $objectarray;
 }
-
+function getAzubiID ($azubidata)
+{
+    $gapid=0;
+    for ($i = 0; $i<count($azubidata); $i++){
+        $id=$i+1;
+        if ($i > 0 && $id > $azubidata[$i-1]->getId() && $id < $azubidata[$i]->getId()){
+            $gapid=$id;
+        }
+    }
+    if ($gapid != 0){
+        return $gapid;
+    }
+    return $id+1;
+}
+function getBiggestAzubiID ($azubidata)
+{
+    $bigid=0;
+    for ($i = 0; $i<count($azubidata); $i++){
+        $id=$i+1;
+        if ($id<$azubidata[$i]->getId()){
+            $bigid=$azubidata[$i]->getId();
+        }
+    }
+    if ($bigid != 0){
+        return $bigid;
+    }
+    return $id;
+}
+function getLocationStringAndRedirect($page = false,$dropdown = false,$search = false,$order = false,$orderdirection = false)
+{
+    $locationstring = "location: ".conf::getParam("url")."teameditsite.php?";
+    if (false !== $page){
+        $locationstring .= "page=".$page;
+    }
+    if (false !== $dropdown){
+        $locationstring .= "&dropdown=".$dropdown;
+    }
+    if (false !== $search){
+        $locationstring .= "&search=".$search;
+    }
+    if (false !== $order){
+        $locationstring .= "&order=".$order."&orderdir=".$orderdirection;
+    }
+    header($locationstring);
+}
+function getPageMax($limit,$azubidata)
+{
+    $allazubicount = count($azubidata);
+    return  ceil($allazubicount / $limit);
+}
+function getPictureUrl($filename)
+{
+    if (!empty($filename)) {
+        return conf::getParam("url")."pics/".$filename;
+    }
+    return "https://secure.gravatar.com/avatar/cb665e6a65789619c27932fc7b51f8dc?default=mm&size=200&rating=G";
+}
+function getRequestParameter($key,$default = false)
+{
+    if (isset($_REQUEST[$key])){
+        return $_REQUEST[$key];
+    }
+    return $default;
+}
 function timeSince($input)
 {
     $date = ((time() - strtotime($input)) / 60 / 60 / 24);
@@ -87,129 +135,6 @@ function timeSince($input)
     }
     return $output;
 }
-
-function getInsertQuery($array,$azubiid,$password)
-{
-    $querybegin = "INSERT INTO azubi (id";
-    $queryend = ") VALUES ( '" .$azubiid. "'";
-    foreach ($array as $key){
-        if ($key == "pictureurl"){
-            if (!empty(uploadPictureGetFilename())){
-                $querybegin .= ", ".$key;
-                $queryend .= ", '".uploadPictureGetFilename()."'";
-            }
-        } elseif ($key == "password"){
-            $querybegin .= ", ".$key;
-            $queryend .= ", '".$password."'";
-        } elseif (!empty(getRequestParameter($key))){
-            $querybegin .= ", ".$key;
-            $queryend .= ", '".getRequestParameter($key)."'";
-        }
-    }
-    $query = $querybegin.$queryend.")";
-    return $query;
-}
-
-function skillInsert($skillarray,$connection,$azubiid,$skilltype)
-{
-    $oldskills = getSkillArray($connection,$azubiid,$skilltype);
-    $i = 0;
-    foreach ($skillarray as $skill){
-        if (!empty($skill) && $oldskills[$i] != $skill){
-            $skillquery = "INSERT INTO azubi_skills (azubi_id,type,skill) VALUES (";
-            $skillquery .= "'".$azubiid."', '".$skilltype."', '".trim($skill)."')";
-            executeMySQLQuery($connection, $skillquery);
-        }
-        $i++;
-    }
-}
-
-function getValueIfIsset($array,$parameter){
-    if(isset($array[$parameter])){
-        return $array[$parameter];
-    }
-}
-
-function getSkillArray($connection, $azubiid, $type){
-    $skills = getSkillsByType($connection, $azubiid, $type);
-    $skillarray = [];
-    foreach ($skills as $sks){
-        $skillarray[]=$sks["skill"];
-    }
-    return $skillarray;
-}
-
-function getUpdateQuery($array,$azubiid,$password)
-{
-    $querybegin = "UPDATE azubi ";
-    $querymid = "SET ";
-    $queryend = "WHERE id = ".$azubiid;
-    foreach ($array as $key){
-        if ($key == "pictureurl"){
-            if (!empty(uploadPictureGetFilename())){
-                $querymid .= $key."="."'".uploadPictureGetFilename()."',";
-            }
-        } elseif ($key == "password"){
-            $querymid .= $key."="."'".$password."',";
-        } elseif (!empty(getRequestParameter($key))) {
-            $querymid .= $key."="."'".getRequestParameter($key)."',";
-        }
-    }
-    $query=$querybegin.substr($querymid,0,-1).$queryend;
-    return $query;
-}
-
-function skillUpdate($skillarray,$connection,$azubiid,$skilltype)
-{
-    $oldskills = getSkillArray($connection,$azubiid,$skilltype);
-    $i = 0;
-    foreach ($oldskills as $skill){
-        if ($skillarray[$i] !== $skill) {
-            $skillquery = "DELETE FROM azubi_skills WHERE azubi_id ='".$azubiid."' AND type = '".$skilltype."' AND skill = '".$oldskills[$i]."'";
-            executeMySQLQuery($connection, $skillquery);
-        }
-        $i++;
-    }
-    skillInsert($skillarray,$connection,$azubiid,$skilltype);
-}
-
-function deleteAzubi($connection,$id)
-{
-    $azubi_query = "DELETE FROM azubi WHERE id='".$id."'";
-    $skill_query = "DELETE FROM azubi_skills WHERE azubi_id='".$id."'";
-    if (executeMySQLQuery($connection, $azubi_query)) {
-        executeMySQLQuery($connection,$skill_query);
-    } else {
-        echo "Error: " . $azubi_query . "<br><br>" . mysqli_error($connection);
-    }
-}
-
-function updateAzubi($parameterarray,$id,$kskills,$nskills,$connection,$password)
-{
-    $azubi_query = getUpdateQuery($parameterarray,$id,$password);
-    $preskills = explode(", ",$kskills);
-    $newskills = explode(", ",$nskills);
-    if (executeMySQLQuery($connection, $azubi_query)) {
-        skillUpdate($preskills,$connection,$id,"pre");
-        skillUpdate($newskills,$connection,$id,"new");
-    } else {
-        echo "Error: " . $azubi_query . "<br><br>" . mysqli_error($connection);
-    }
-}
-
-function insertAzubi($parameterarray,$id,$kskills,$nskills,$connection,$password)
-{
-    $preskills = explode(",",$kskills);
-    $newskills = explode(",",$nskills);
-    $azubi_query = getInsertQuery($parameterarray,$id,$password);
-    if (executeMySQLQuery($connection, $azubi_query)) {
-        skillInsert($preskills,$connection,$id,"pre");
-        skillInsert($newskills,$connection,$id,"new");
-    } else {
-        echo "Error: " . $azubi_query . "<br><br>" . mysqli_error($connection);
-    }
-}
-
 function executeMySQLQuery($connection,$query)
 {
     $result = mysqli_query($connection,$query);
@@ -220,7 +145,6 @@ function executeMySQLQuery($connection,$query)
     #echo $query."<br>";
     return $result;
 }
-
 function uploadPictureGetFilename ()
 {
     $tmppath = $_FILES["pictureurl"]["tmp_name"];
@@ -235,69 +159,6 @@ function uploadPictureGetFilename ()
     }
     return null;
 }
-
-function getAzubiID ($azubidata)
-{
-    $gapid=0;
-    for ($i = 0; $i<count($azubidata); $i++){
-        $id=$i+1;
-        if ($id>$azubidata[$i-1]["id"]&&$id<$azubidata[$i]["id"]){
-            $gapid=$id;
-        }
-    }
-    if ($gapid != 0){
-        return $gapid;
-    }
-    return $id+1;
-}
-
-function getBiggestAzubiID ($azubidata)
-{
-    $bigid=0;
-    for ($i = 0; $i<count($azubidata); $i++){
-        $id=$i+1;
-        if ($id<$azubidata[$i]["id"]){
-            $bigid=$azubidata[$i]["id"];
-        }
-    }
-    if ($bigid != 0){
-        return $bigid;
-    }
-    return $id;
-}
-
-function getPageMax($limit,$azubidata)
-{
-    $allazubicount = count($azubidata);
-    return  ceil($allazubicount / $limit);
-}
-
-function getGetParameter($key,$default = false)
-{
-    if (isset($_GET[$key])){
-        return $_GET[$key];
-    }
-    return $default;
-}
-
-function getLocationStringAndRedirect($page = false,$dropdown = false,$search = false,$order = false,$orderdirection = false)
-{
-    $locationstring = "location: ".getConfigParameter("url")."teameditsite.php?";
-    if (false !== $page){
-        $locationstring .= "page=".$page;
-    }
-    if (false !== $dropdown){
-        $locationstring .= "&dropdown=".$dropdown;
-    }
-    if (false !== $search){
-        $locationstring .= "&search=".$search;
-    }
-    if (false !== $order){
-        $locationstring .= "&order=".$order."&orderdir=".$orderdirection;
-    }
-    header($locationstring);
-}
-
 function validateAzubiLogin($connection,$email,$password)
 {
     if (!empty($email)){
@@ -310,25 +171,26 @@ function validateAzubiLogin($connection,$email,$password)
         }
     }
 }
-
 function addSaltGetMD5($password)
 {
-    return md5(getConfigParameter("salt").$password);
+    return md5(conf::getParam("salt").$password);
 }
-
 function getUrl($sitename = "")
 {
-    return getConfigParameter("url").$sitename;
+    return conf::getParam("url").$sitename;
 }
-
-function getConfigParameter ($key)
+function saveAzubi($password)
 {
-    if (file_exists("config.php")){
-        include "config.php";
-    } else {
-        exit("Keine config.php gefunden");
-    }
-    if (isset($configarray[$key])){
-        return $configarray[$key];
-    }
+    $azubi = new azubi(
+        getRequestParameter("id"),
+        getRequestParameter("name"),
+        getRequestParameter("birthday"),
+        getRequestParameter("email"),
+        getRequestParameter("githubuser"),
+        getRequestParameter("employmentstart"),
+        uploadPictureGetFilename(),
+        $password,
+        explode(",",getRequestParameter("kskills")),
+        explode(",",getRequestParameter("nskills")));
+    $azubi->save();
 }

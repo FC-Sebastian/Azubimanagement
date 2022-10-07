@@ -1,7 +1,7 @@
 <?php
 include "config.php";
 include "functions.php";
-$con = getDatabaseConnection();
+$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
 $azubidata = getAzubiData($con);
 $id = getAzubiID($azubidata);
 $pararray = ["name", "birthday", "email",
@@ -13,14 +13,14 @@ if (getRequestParameter("pass") === getRequestParameter("confpass") && getReques
     exit();
 }
 if (!empty(getRequestParameter("delete")) && getRequestParameter("delete") == "on"){
-    deleteAzubi($con,getRequestParameter("id"));
+    $azubi = new azubi(getRequestParameter("id"));
+    $azubi -> delete();
     header("location: ".getUrl("inputsite.php"));
 } elseif (!empty(getRequestParameter("id"))) {
-    echo $password."<br>";
-    updateAzubi($pararray,getRequestParameter("id"),getRequestParameter("kskills"),getRequestParameter("nskills"),$con,$password);
+    saveAzubi($password);
     header("location: ".getUrl("inputsite.php"));
 } else {
-    insertAzubi($pararray,$id,getRequestParameter("kskills"),getRequestParameter("nskills"),$con,$password);
+    saveAzubi($password);
     header("location: ".getUrl("inputsite.php"));
 }
 mysqli_close($con);

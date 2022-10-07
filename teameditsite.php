@@ -4,7 +4,7 @@ include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
 $title = "back-end liste";
 include "header.php";
-$con = getDatabaseConnection();
+$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
 $page = getRequestParameter("page",1);
 if ($page < 1){
     $page = 1;
@@ -31,17 +31,17 @@ $pagemax2 = $pagemax;
             <tr class="colored">
                 <th class="borderboys" class="header"></th>
                 <th class="borderboys" class="header">
-                    <a href="<?php echo getUrl("teameditsite.php")?>?order=name&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=name&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getRequestParameter("search")?>">
                         Name
                     </a>
                 </th>
                 <th class="borderboys" class="header">
-                    <a href="<?php echo getUrl("teameditsite.php")?>?order=birthday&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=birthday&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getRequestParameter("search")?>">
                         Geburtstag
                     </a>
                 </th>
                 <th class="borderboys" class="header">
-                    <a href="<?php echo getUrl("teameditsite.php")?>?order=email&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                    <a href="<?php echo getUrl("teameditsite.php")?>?order=email&orderdir=<?php echo (getRequestParameter("orderdir",-1) * -1)?>&page=<?php echo $page?>&dropdown=<?php echo $limit?>&search=<?php echo getRequestParameter("search")?>">
                         E-Mail
                     </a>
                 </th>
@@ -50,28 +50,28 @@ $pagemax2 = $pagemax;
             <?php foreach($azubidata as $azubidata):?>
             <tr class="colored">
                 <td class="borderboys">
-                    <input type="checkbox" name="deletearray[]" value="<?php echo getValueIfIsset($azubidata,"id")?>">
+                    <input type="checkbox" name="deletearray[]" value="<?php echo $azubidata->getId()?>">
                 </td>
                 <td class="borderboys" class="textboy">
                     <?php
-                        echo getValueIfIsset($azubidata,"name");
+                        echo $azubidata->getName();
                     ?>
                 </td>
                 <td class="borderboys" class="textboy">
                     <?php
-                        echo getValueIfIsset($azubidata,"birthday");
+                        echo $azubidata->getBday();
                     ?>
                 </td>
                 <td class="borderboys" class="textboy">
                     <?php
-                        echo getValueIfIsset($azubidata,"email");
+                        echo $azubidata->getEmail();
                     ?>
                 </td>
                 <td class="borderboys" class="textboy">
-                    <a class="linkpic" href="<?php echo getUrl("inputsite.php")?>?id=<?php echo getValueIfIsset($azubidata,"id")?>">
+                    <a class="linkpic" href="<?php echo getUrl("inputsite.php")?>?id=<?php echo $azubidata->getId()?>">
                         <img src="<?php echo getUrl("")?>pics/iconmonstr-pencil-14.svg">
                     </a>
-                    <a class="linkpic" href="teamedit.php?delete=<?php echo getValueIfIsset($azubidata,"id")?>&dropdown=<?php echo $limit?>">
+                    <a class="linkpic" href="teamedit.php?delete=<?php echo $azubidata->getId()?>&dropdown=<?php echo $limit?>">
                         <img src="<?php echo getUrl("")?>pics/iconmonstr-trash-can-29.svg">
                     </a>
                 </td>
@@ -100,7 +100,7 @@ $pagemax2 = $pagemax;
             <tr>
                 <td>
                     <?php if ($page >= 2):?>
-                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page - 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page - 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getRequestParameter("search")?>">
                             <img id="left" src="<?php echo getUrl("")?>pics/iconmonstr-caret-left-filled.svg">
                         </a>
                     <?php endif;?>
@@ -120,7 +120,7 @@ $pagemax2 = $pagemax;
                 </td>
                 <td>
                     <?php if ($page < $pagemax2):?>
-                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page + 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getGetParameter("search")?>">
+                        <a href="<?php echo getUrl("teameditsite.php")?>?page=<?php echo ($page + 1)?>&order=<?php echo getRequestParameter("order")?>&orderdir=<?php echo getRequestParameter("orderdir",0)?>&dropdown=<?php echo $limit?>&search=<?php echo getRequestParameter("search")?>">
                             <img id="right" src="<?php echo getUrl("")?>pics/iconmonstr-caret-right-filled.svg">
                         </a>
                     <?php endif;?>

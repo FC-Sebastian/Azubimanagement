@@ -3,10 +3,8 @@
 $configarray = [
     "salt" => "YOUR VALUE HERE",
     "url" => "YOUR VALUE HERE",
-    "MySQL" => [
-        "hostname" => "YOUR VALUE HERE",
-        "username" => "YOUR VALUE HERE",
-        "password" => "YOUR VALUE HERE",
-        "database" => "YOUR VALUE HERE"
-    ]
+    "dbhost" => "YOUR VALUE HERE",
+    "dbuser" => "YOUR VALUE HERE",
+    "dbpass" => "YOUR VALUE HERE",
+    "database" => "YOUR VALUE HERE"
 ];

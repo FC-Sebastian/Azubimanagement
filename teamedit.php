@@ -1,19 +1,21 @@
 <?php
 include "functions.php";
-$con = getDatabaseConnection();
+$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
 $azubidata = getAzubiData($con);
 $bigid = getBiggestAzubiID($azubidata);
 
 if (!empty(getRequestParameter("delete"))){
-    deleteAzubi($con,getRequestParameter("delete"));
+    $azubi = new azubi();
+    $azubi->delete(getRequestParameter("delete"));
     getLocationStringAndRedirect(1,getRequestParameter("dropdown"),getRequestParameter("lastsearch"),getRequestParameter("order"),getRequestParameter("orderdir"));
 }
 if (!empty(getRequestParameter("newazubi"))){
     header("location: ".getUrl("inputsite.php"));
 }
-if (false !== (getRequestParameter("deletearray"))) {
+if (getRequestParameter("deletearray") !== false) {
     foreach (getRequestParameter("deletearray") as $id){
-        deleteAzubi($con,$id);
+        $azubi = new azubi();
+        $azubi->delete($id);
     }
     getLocationStringAndRedirect(getRequestParameter("page"),getRequestParameter("dropdown"),getRequestParameter("lastsearch"),getRequestParameter("order"),getRequestParameter("orderdir"));
 }

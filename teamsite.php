@@ -1,30 +1,30 @@
 <?php
 include "functions.php";
-$con = getDatabaseConnection();
+$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
 $allazubi = getAzubiData($con);
 include "header.php";
 ?>
 <div class="teamboxes">
     <?php foreach($allazubi as $azu):?>
         <div class="teambox" >
-            <a href="<?php echo getUrl("mysite.php")?>?id=<?php echo $azu["id"]?>">
-                <img class="teampic" src=<?php echo getPictureUrl($azu["pictureurl"])?>
+            <a href="<?php echo getUrl("mysite.php")?>?id=<?php echo $azu->getId()?>">
+                <img class="teampic" src=<?php echo getPictureUrl($azu->getPicurl())?>
                 >
             </a>
             <br>
-            <h><?php echo $azu["name"];?></h>
+            <h><?php echo $azu->getName();?></h>
             <div>
                 <ul class="contacts">
-                    <?php if (!empty($azu["email"])):?>
+                    <?php if (!empty($azu->getEmail())):?>
                         <li>
-                            <a class="elink" href="mailto:<?php echo $azu["email"];?>">
-                                <?php echo $azu["email"];?>
+                            <a class="elink" href="mailto:<?php echo $azu->getEmail();?>">
+                                <?php echo $azu->getEmail();?>
                             </a>
                         </li>
                     <?php endif;
-                    if (!empty($azu["githubuser"])):?>
+                    if (!empty($azu->getGithub())):?>
                         <li>
-                            <?php echo $azu["githubuser"];?>
+                            <?php echo $azu->getGithub();?>
                         </li>
                     <?php endif;?>
                 </ul>
@@ -32,9 +32,9 @@ include "header.php";
             <div>
                 <ul class="dates">
                     <li>date of birth</li>
-                    <li><b><?php echo $azu["birthday"];?></b></li>
+                    <li><b><?php echo $azu->getBday();?></b></li>
                     <li>joined FATCHIP</li>
-                    <li><b><?php echo $azu["employmentstart"];?></b></li>
+                    <li><b><?php echo $azu->getEmploystart();?></b></li>
                 </ul>
             </div>
         </div>

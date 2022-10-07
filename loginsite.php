@@ -2,8 +2,7 @@
 session_start();
 include "functions.php";
 $title = "Login";
-$con = getDatabaseConnection();
-$passwords = getAzubiData($con,false,"password");
+$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
 $hashpass = addSaltGetMD5(getRequestParameter("loginpass"));
 if (validateAzubiLogin($con,getRequestParameter("loginemail"),$hashpass)){
     $_SESSION["logintime"] = time();
