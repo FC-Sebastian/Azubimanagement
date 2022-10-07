@@ -1,7 +1,7 @@
 <?php
 include "functions.php";
 include_once "classes/dbconnection.php";
-$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
+$con = dbconnection::getDbConnection();
 $azubiid = getRequestParameter("id",1);
 $azubidata = new azubi();
 $azubidata->load($azubiid);

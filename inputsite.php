@@ -3,7 +3,7 @@ include "functions.php";
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
 $title = "new Azubi";
-$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
+$con = dbconnection::getDbConnection();
 $azubidata = getAzubiData($con);
 $azubiid = getRequestParameter("id");
 $azubi = new azubi;
@@ -99,12 +99,12 @@ include "header.php";
         <div>
             <label for="kskills">Known Skills (seperate by comma)</label>
             <br>
-            <textarea name="kskills" rows="5" cols="60"><?php echo implode(", ", $azubi->getPreskills())?></textarea>
+            <textarea name="kskills" rows="5" cols="60"><?php if (!empty($azubi->getPreskills())){echo implode(", ", $azubi->getPreskills());}?></textarea>
         </div>
         <div>
             <label for="nskills">New Skills (seperate by comma)</label>
             <br>
-            <textarea name="nskills" rows="5" cols="60"><?php echo implode(", ", $azubi->getNewskills())?></textarea>
+            <textarea name="nskills" rows="5" cols="60"><?php if (!empty($azubi->getPreskills())){echo implode(", ", $azubi->getNewskills());}?></textarea>
         </div>
     </div>
     <div class="buttons">

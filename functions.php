@@ -1,7 +1,7 @@
 <?php
-include "classes/azubi.php";
 include "classes/conf.php";
 include "classes/dbconnection.php";
+include "classes/azubi.php";
 
 function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = false, $orderdir = 0,$search = false, $limit = false, $offset = 0)
 {
@@ -41,20 +41,6 @@ function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = fa
     }
     return $objectarray;
 }
-function getBiggestAzubiID ($azubidata)
-{
-    $bigid=0;
-    for ($i = 0; $i<count($azubidata); $i++){
-        $id=$i+1;
-        if ($id<$azubidata[$i]->getId()){
-            $bigid=$azubidata[$i]->getId();
-        }
-    }
-    if ($bigid != 0){
-        return $bigid;
-    }
-    return $id;
-}
 function getLocationStringAndRedirect($page = false,$dropdown = false,$search = false,$order = false,$orderdirection = false)
 {
     $locationstring = "location: ".conf::getParam("url")."teameditsite.php?";
@@ -91,6 +77,45 @@ function getRequestParameter($key,$default = false)
     }
     return $default;
 }
+function getUrl($sitename = "")
+{
+    return conf::getParam("url").$sitename;
+}
+function getValueIfIsset($array,$key){
+    if (isset($array[0][$key])){
+        return  $array[0][$key];
+    }
+    return false;
+}
+function addSaltGetMD5($password)
+{
+    return md5(conf::getParam("salt").$password);
+}
+function executeMySQLQuery($connection,$query)
+{
+    $result = mysqli_query($connection,$query);
+    $error = mysqli_error($connection);
+    if (!empty($error)){
+        echo "<h1>Error with query: ".$query." <br> Error:".$error."</h1>";
+    }
+    #echo $query."<br>";
+    return $result;
+}
+function saveAzubi($password)
+{
+    $azubi = new azubi(
+        getRequestParameter("id"),
+        getRequestParameter("name"),
+        getRequestParameter("birthday"),
+        getRequestParameter("email"),
+        getRequestParameter("githubuser"),
+        getRequestParameter("employmentstart"),
+        uploadPictureGetFilename(),
+        $password,
+        explode(",",getRequestParameter("kskills")),
+        explode(",",getRequestParameter("nskills")));
+    $azubi->save();
+}
 function timeSince($input)
 {
     $date = ((time() - strtotime($input)) / 60 / 60 / 24);
@@ -121,16 +146,6 @@ function timeSince($input)
     }
     return $output;
 }
-function executeMySQLQuery($connection,$query)
-{
-    $result = mysqli_query($connection,$query);
-    $error = mysqli_error($connection);
-    if (!empty($error)){
-        echo "<h1>Error with query: ".$query." <br> Error:".$error."</h1>";
-    }
-    #echo $query."<br>";
-    return $result;
-}
 function uploadPictureGetFilename ()
 {
     $tmppath = $_FILES["pictureurl"]["tmp_name"];
@@ -156,27 +171,4 @@ function validateAzubiLogin($connection,$email,$password)
             return true;
         }
     }
-}
-function addSaltGetMD5($password)
-{
-    return md5(conf::getParam("salt").$password);
-}
-function getUrl($sitename = "")
-{
-    return conf::getParam("url").$sitename;
-}
-function saveAzubi($password)
-{
-    $azubi = new azubi(
-        getRequestParameter("id"),
-        getRequestParameter("name"),
-        getRequestParameter("birthday"),
-        getRequestParameter("email"),
-        getRequestParameter("githubuser"),
-        getRequestParameter("employmentstart"),
-        uploadPictureGetFilename(),
-        $password,
-        explode(",",getRequestParameter("kskills")),
-        explode(",",getRequestParameter("nskills")));
-    $azubi->save();
 }

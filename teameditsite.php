@@ -4,7 +4,7 @@ include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
 $title = "back-end liste";
 include "header.php";
-$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
+$con = dbconnection::getDbConnection();
 $page = getRequestParameter("page",1);
 if ($page < 1){
     $page = 1;

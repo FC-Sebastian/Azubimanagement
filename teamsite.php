@@ -1,6 +1,6 @@
 <?php
 include "functions.php";
-$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
+$con = dbconnection::getDbConnection();
 $allazubi = getAzubiData($con);
 include "header.php";
 ?>

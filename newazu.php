@@ -1,5 +1,4 @@
 <?php
-include "config.php";
 include "functions.php";
 if (getRequestParameter("pass") === getRequestParameter("confpass") && getRequestParameter("pass") !== false){
     $password = addSaltGetMD5(getRequestParameter("pass"));

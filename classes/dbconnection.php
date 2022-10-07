@@ -14,10 +14,10 @@ class dbconnection
         }
         $this->connection = $connection;
     }
-    public static function getDbConnection($hostname = "localhost",$username = "root",$password = "",$db = "test")
+    public static function getDbConnection()
     {
         if (self::$instance === null){
-            self::$instance = new dbconnection($hostname,$username,$password,$db);
+            self::$instance = new dbconnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
         }
         return self::$instance->connection;
     }
