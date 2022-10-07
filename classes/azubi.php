@@ -12,7 +12,7 @@ class azubi
     protected $preskills;
     protected $newskills;
 
-    public function __construct($id = null,$name = null,$bday = null,$email = null,$git = null,$employstart = null,$picurl = null,$pass = null,$pre = null,$new = null)
+    public function __construct($id = "",$name = "",$bday = "",$email = "",$git = "",$employstart = "",$picurl = "",$pass = "",$pre = [],$new = [])
     {
         $this->setId($id);
         $this->setName($name);
@@ -112,24 +112,20 @@ class azubi
     {
         $query = "SELECT * FROM azubi WHERE id=$id;";
         $result = executeMySQLQuery($query);
-        $dataArray = mysqli_fetch_all($result,MYSQLI_ASSOC);
-        if (!isset($dataArray[0])){
+        if (mysqli_num_rows($result) == 0){
             return;
         }
-
-        $preskills = $this->getSkillArray($id,"pre");
-        $newskills = $this->getSkillArray($id,"new");;
-
+        $dataArray = mysqli_fetch_assoc($result);
         $this->setId($id);
-        $this->setName($dataArray[0]["name"]);
-        $this->setBday($dataArray[0]["birthday"]);
-        $this->setEmail($dataArray[0]["email"]);
-        $this->setGithub($dataArray[0]["githubuser"]);
-        $this->setEmploystart($dataArray[0]["employmentstart"]);
-        $this->setPicurl($dataArray[0]["pictureurl"]);
-        $this->setPass($dataArray[0]["password"]);
-        $this->setPreskills($preskills);
-        $this->setNewskills($newskills);
+        $this->setName($dataArray["name"]);
+        $this->setBday($dataArray["birthday"]);
+        $this->setEmail($dataArray["email"]);
+        $this->setGithub($dataArray["githubuser"]);
+        $this->setEmploystart($dataArray["employmentstart"]);
+        $this->setPicurl($dataArray["pictureurl"]);
+        $this->setPass($dataArray["password"]);
+        $this->setPreskills($this->getSkillArray("pre"));
+        $this->setNewskills($this->getSkillArray("new"));
     }
     public function delete($id = false)
     {
@@ -145,22 +141,21 @@ class azubi
     {
         $query = "SELECT * FROM azubi WHERE id='$this->id';";
         $result = executeMySQLQuery($query);
-        $azubiId = mysqli_fetch_all($result,MYSQLI_ASSOC);
-        $idCheck = $azubiId[0]["id"];
-        if ($this->id == $idCheck && !empty($idCheck)){
+        $azubiId = mysqli_fetch_assoc($result);
+        if ($this->id == $azubiId["id"] && !empty($azubiId["id"])){
             $this->azubiUpdate();
-            $this->skillUpdate($this->preskills,$this->id,"pre");
-            $this->skillUpdate($this->newskills,$this->id,"new");
+            $this->skillUpdate($this->preskills,"pre");
+            $this->skillUpdate($this->newskills,"new");
         } else {
             $this->azubiInsert();
-            $this->skillInsert($this->preskills,$this->id,"pre");
-            $this->skillInsert($this->newskills,$this->id,"new");
+            $this->skillInsert($this->preskills,"pre");
+            $this->skillInsert($this->newskills,"new");
         }
     }
 
-    protected function getSkillArray($id,$type)
+    protected function getSkillArray($type)
     {
-        $result = executeMySQLQuery("SELECT skill FROM azubi_skills WHERE azubi_id = $id AND type = '$type'");
+        $result = executeMySQLQuery("SELECT skill FROM azubi_skills WHERE azubi_id = $this->id AND type = '$type'");
         $lameArray = mysqli_fetch_all($result,MYSQLI_ASSOC);
         $coolArray = [];
         foreach ($lameArray as $skill){
@@ -168,7 +163,7 @@ class azubi
         }
         return $coolArray;
     }
-    protected function skillInsert($skillarray,$azubiid,$skilltype)
+    protected function skillInsert($skillarray,$skilltype)
     {
         $i = 0;
         if (!is_array($skillarray)){
@@ -180,29 +175,29 @@ class azubi
         foreach ($skills as $skill){
             if (!empty($skill)){
                 $skillquery = "INSERT INTO azubi_skills (azubi_id,type,skill) VALUES (";
-                $skillquery .= "'".$azubiid."', '".$skilltype."', '".trim($skill)."')";
+                $skillquery .= "'".$this->id."', '".$skilltype."', '".trim($skill)."')";
                 executeMySQLQuery($skillquery);
             }
             $i++;
         }
     }
-    protected function skillUpdate($skillarray,$azubiid,$skilltype)
+    protected function skillUpdate($skillarray,$skilltype)
     {
-        $oldskills = $this->getSkillArray($azubiid,$skilltype);
+        $oldskills = $this->getSkillArray($skilltype);
         $i = 0;
         foreach ($skillarray as $skill){
             if ($oldskills[$i] !== $skill) {
-                $skillquery = "UPDATE azubi_skills SET skill = '$skill' WHERE azubi_id ='$azubiid' AND type = '$skilltype' AND skill = '$oldskills[$i]'";
+                $skillquery = "UPDATE azubi_skills SET skill = '$skill' WHERE azubi_id ='$this->id' AND type = '$skilltype' AND skill = '$oldskills[$i]'";
                 executeMySQLQuery($skillquery);
                 if ($i >= count($oldskills)){
-                    $this->skillInsert($skill,$azubiid,$skilltype);
+                    $this->skillInsert($skill,$skilltype);
                 }
             }
             $i++;
         }
         if ($i < count($oldskills)){
             for ($o = $i; $o < count($oldskills); $o++){
-                $query = "DELETE FROM azubi_skills WHERE azubi_id = '$azubiid' AND skill = '$oldskills[$o]'";
+                $query = "DELETE FROM azubi_skills WHERE azubi_id = '$this->id' AND skill = '$oldskills[$o]'";
                 executeMySQLQuery($query);
                 echo $query;
             }
