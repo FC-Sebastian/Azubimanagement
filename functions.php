@@ -41,20 +41,6 @@ function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = fa
     }
     return $objectarray;
 }
-function getAzubiID ($azubidata)
-{
-    $gapid=0;
-    for ($i = 0; $i<count($azubidata); $i++){
-        $id=$i+1;
-        if ($i > 0 && $id > $azubidata[$i-1]->getId() && $id < $azubidata[$i]->getId()){
-            $gapid=$id;
-        }
-    }
-    if ($gapid != 0){
-        return $gapid;
-    }
-    return $id+1;
-}
 function getBiggestAzubiID ($azubidata)
 {
     $bigid=0;

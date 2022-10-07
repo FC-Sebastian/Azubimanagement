@@ -1,11 +1,6 @@
 <?php
 include "config.php";
 include "functions.php";
-$con = dbconnection::getDbConnection(conf::getParam("dbhost"),conf::getParam("dbuser"),conf::getParam("dbpass"),conf::getParam("db"));
-$azubidata = getAzubiData($con);
-$id = getAzubiID($azubidata);
-$pararray = ["name", "birthday", "email",
-    "githubuser", "employmentstart", "pictureurl", "password"];
 if (getRequestParameter("pass") === getRequestParameter("confpass") && getRequestParameter("pass") !== false){
     $password = addSaltGetMD5(getRequestParameter("pass"));
 } else {
@@ -23,4 +18,3 @@ if (!empty(getRequestParameter("delete")) && getRequestParameter("delete") == "o
     saveAzubi($password);
     header("location: ".getUrl("inputsite.php"));
 }
-mysqli_close($con);
