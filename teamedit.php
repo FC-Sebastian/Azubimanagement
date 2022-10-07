@@ -1,7 +1,6 @@
 <?php
 include "functions.php";
-$con = dbconnection::getDbConnection();
-$azubidata = getAzubiData($con);
+$azubidata = getAzubiData();
 
 if (!empty(getRequestParameter("delete"))){
     $azubi = new azubi();

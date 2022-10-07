@@ -3,7 +3,7 @@ include "classes/conf.php";
 include "classes/dbconnection.php";
 include "classes/azubi.php";
 
-function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = false, $orderdir = 0,$search = false, $limit = false, $offset = 0)
+function getAzubiData($azubiid = false,$needle = "*", $orderby = false, $orderdir = 0,$search = false, $limit = false, $offset = 0)
 {
     $query = "SELECT $needle FROM azubi";
     if (!empty($search)){
@@ -24,7 +24,7 @@ function getAzubiData($connection, $azubiid = false,$needle = "*", $orderby = fa
         $query .= " LIMIT ".$offset.",".$limit;
     }
     $query .= ";";
-    $result = executeMySQLQuery($connection,$query);
+    $result = executeMySQLQuery($query);
     $array = mysqli_fetch_all($result,MYSQLI_ASSOC);
     $objectarray = [];
     foreach ($array as $azu){
@@ -91,10 +91,10 @@ function addSaltGetMD5($password)
 {
     return md5(conf::getParam("salt").$password);
 }
-function executeMySQLQuery($connection,$query)
+function executeMySQLQuery($query)
 {
-    $result = mysqli_query($connection,$query);
-    $error = mysqli_error($connection);
+    $result = mysqli_query(dbconnection::getDbConnection(),$query);
+    $error = mysqli_error(dbconnection::getDbConnection());
     if (!empty($error)){
         echo "<h1>Error with query: ".$query." <br> Error:".$error."</h1>";
     }
@@ -160,12 +160,12 @@ function uploadPictureGetFilename ()
     }
     return null;
 }
-function validateAzubiLogin($connection,$email,$password)
+function validateAzubiLogin($email,$password)
 {
     if (!empty($email)){
         $query = "SELECT email, password FROM azubi WHERE email = '$email' AND password = '$password'";
 
-        $result = executeMySQLQuery($connection,$query);
+        $result = executeMySQLQuery($query);
         $azubilogin = mysqli_fetch_all($result,MYSQLI_ASSOC);
         if (!empty($azubilogin)){
             return true;

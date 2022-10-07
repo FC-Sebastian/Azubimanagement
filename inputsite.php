@@ -3,8 +3,7 @@ include "functions.php";
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
 $title = "new Azubi";
-$con = dbconnection::getDbConnection();
-$azubidata = getAzubiData($con);
+$azubidata = getAzubiData();
 $azubiid = getRequestParameter("id");
 $azubi = new azubi;
 if (!empty($azubiid)){
@@ -121,5 +120,4 @@ include "header.php";
 </form>
 <?php
 include "footer.php";
-mysqli_close($con);
 ?>

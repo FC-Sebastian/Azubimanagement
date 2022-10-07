@@ -1,7 +1,6 @@
 <?php
 include "functions.php";
-$con = dbconnection::getDbConnection();
-$allazubi = getAzubiData($con);
+$allazubi = getAzubiData();
 include "header.php";
 ?>
 <div class="teamboxes">
@@ -42,5 +41,4 @@ include "header.php";
 </div>
 <?php
 include "footer.php";
-mysqli_close($con);
 ?>

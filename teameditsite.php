@@ -4,7 +4,6 @@ include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
 $title = "back-end liste";
 include "header.php";
-$con = dbconnection::getDbConnection();
 $page = getRequestParameter("page",1);
 if ($page < 1){
     $page = 1;
@@ -14,11 +13,11 @@ $offset = ($page - 1) * $limit;
 if ($offset < 0){
     $offset = 0;
 }
-$azubidata = getAzubiData($con);
+$azubidata = getAzubiData();
 $pagemax = getPageMax($limit,$azubidata);
 $pagei = 1;
 $ddoptions = [1,5,10,20];
-$azubidata = getAzubiData($con,false,"*",getRequestParameter("order"),getRequestParameter("orderdir"),getRequestParameter("search"),$limit,$offset);
+$azubidata = getAzubiData(false,"*",getRequestParameter("order"),getRequestParameter("orderdir"),getRequestParameter("search"),$limit,$offset);
 $pagemax2 = $pagemax;
 ?>
 <form action="<?php echo getUrl("teamedit.php")?>" method="post">
@@ -137,5 +136,4 @@ $pagemax2 = $pagemax;
     </form>
 <?php
 include "footer.php";
-mysqli_close($con)
 ?>

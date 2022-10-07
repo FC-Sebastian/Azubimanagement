@@ -2,9 +2,8 @@
 session_start();
 include "functions.php";
 $title = "Login";
-$con = dbconnection::getDbConnection();
 $hashpass = addSaltGetMD5(getRequestParameter("loginpass"));
-if (validateAzubiLogin($con,getRequestParameter("loginemail"),$hashpass)){
+if (validateAzubiLogin(getRequestParameter("loginemail"),$hashpass)){
     $_SESSION["logintime"] = time();
     if (isset($_SESSION["origin"])){
         header("location: ".getUrl("").str_replace("azubimanagement/","",$_SESSION["origin"]));
