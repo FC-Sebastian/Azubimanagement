@@ -140,7 +140,7 @@ class azubi
     public function load($id)
     {
         $query = "SELECT * FROM azubi WHERE id=$id;";
-        $result = executeMySQLQuery($query);
+        $result = dbconnection::executeMySQLQuery($query);
         if (mysqli_num_rows($result) == 0) {
             return;
         }
@@ -164,14 +164,14 @@ class azubi
         }
         $azubi_query = "DELETE FROM azubi WHERE id = $id";
         $skill_query = "DELETE FROM azubi_skills WHERE azubi_id = $id";
-        executeMySQLQuery($azubi_query);
-        executeMySQLQuery($skill_query);
+        dbconnection::executeMySQLQuery($azubi_query);
+        dbconnection::executeMySQLQuery($skill_query);
     }
 
     public function save()
     {
         $query = "SELECT * FROM azubi WHERE id='" . $this->getId() . "';";
-        $result = executeMySQLQuery($query);
+        $result = dbconnection::executeMySQLQuery($query);
         $azubiId = mysqli_fetch_assoc($result);
         if ($this->getId() == $azubiId["id"] && !empty($azubiId["id"])) {
             $this->azubiUpdate();
@@ -186,7 +186,7 @@ class azubi
 
     protected function getSkillArray($type)
     {
-        $result = executeMySQLQuery(
+        $result = dbconnection::executeMySQLQuery(
             "SELECT skill FROM azubi_skills WHERE azubi_id = " . $this->getId() . " AND type = '$type'"
         );
         $lameArray = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -210,7 +210,7 @@ class azubi
             if (!empty($skill)) {
                 $skillquery = "INSERT INTO azubi_skills (azubi_id,type,skill) VALUES (";
                 $skillquery .= "'" . $this->getId() . "', '" . $skilltype . "', '" . trim($skill) . "')";
-                executeMySQLQuery($skillquery);
+                dbconnection::executeMySQLQuery($skillquery);
             }
             $i++;
         }
@@ -224,7 +224,7 @@ class azubi
             if ($oldskills[$i] !== $skill) {
                 $skillquery = "UPDATE azubi_skills SET skill = '$skill' WHERE azubi_id ='" . $this->getId(
                     ) . "' AND type = '$skilltype' AND skill = '$oldskills[$i]'";
-                executeMySQLQuery($skillquery);
+                dbconnection::executeMySQLQuery($skillquery);
                 if ($i >= count($oldskills)) {
                     $this->skillInsert($skill, $skilltype);
                 }
@@ -235,7 +235,7 @@ class azubi
             for ($o = $i; $o < count($oldskills); $o++) {
                 $query = "DELETE FROM azubi_skills WHERE azubi_id = '" . $this->getId(
                     ) . "' AND skill = '$oldskills[$o]'";
-                executeMySQLQuery($query);
+                dbconnection::executeMySQLQuery($query);
                 echo $query;
             }
         }
@@ -254,7 +254,7 @@ class azubi
         $querymid .= "pictureurl=" . "'" . $this->getPicurl() . "',";
         $querymid .= "password=" . "'" . $this->getPass() . "',";
         $azubiquery = $querybegin . substr($querymid, 0, -1) . $queryend;
-        executeMySQLQuery($azubiquery);
+        dbconnection::executeMySQLQuery($azubiquery);
     }
 
     protected function azubiInsert()
@@ -264,6 +264,6 @@ class azubi
             ) . "','" . $this->getEmail() . "','" . $this->getGithub() . "','" . $this->getEmploystart(
             ) . "','" . $this->getPicurl() . "','" . $this->getPass() . "'";
         $query = $querybegin . $queryend . ")";
-        executeMySQLQuery($query);
+        dbconnection::executeMySQLQuery($query);
     }
 }

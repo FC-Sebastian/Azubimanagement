@@ -1,19 +1,24 @@
 <?php
 
-include "functions.php";
+include "classes/Inputsite.php";
+$title = "new Azubi";
+$website = new Inputsite();
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
-$title = "new Azubi";
-$azubidata = getAzubiData();
-$azubiid = getRequestParameter("id");
+$azubidata = $website->getAzubiData();
+$azubiid = $website->getRequestParameter("id");
 $azubi = new azubi;
+if (!empty($_POST)){
+    $website->evaluateInput();
+}
 if (!empty($azubiid)) {
     $azubi->load($azubiid);
+    $title = $azubi->getName();
 }
 include "header.php";
 ?>
     <form action="<?php
-    echo getUrl("newazu.php") ?>" enctype='multipart/form-data' method="post">
+    echo $website->getUrl("inputsite.php") ?>" enctype='multipart/form-data' method="post">
         <input id="hideme" type="hidden" name="id" value="<?php
         echo $azubiid ?>">
         <div class="azuinfo">
@@ -57,7 +62,7 @@ include "header.php";
                 <input type="file" name="pictureurl"><br>
             </div>
             <?php
-            if (getRequestParameter("passmismatch") == 1): ?>
+            if ($website->getRequestParameter("passmismatch") == 1): ?>
                 <div>
                     <p><b>Passwords didn't match</b></p>
                 </div>
@@ -76,7 +81,7 @@ include "header.php";
             <table id="inputtable">
                 <tr>
                     <th colspan="2"><a href="<?php
-                        echo getUrl("inputsite.php") ?>">New Azubi</a></th>
+                        echo $website->getUrl("inputsite.php") ?>">New Azubi</a></th>
                 </tr>
                 <tr>
                     <?php
@@ -95,7 +100,7 @@ include "header.php";
                     ?>
                     <td>
                         <a href="<?php
-                        echo getUrl("inputsite.php") ?>?id=<?php
+                        echo $website->getUrl("inputsite.php") ?>?id=<?php
                         echo $azubii->getId() ?>"><?php
                             echo $azubii->getName() ?></a>
                     </td>
@@ -105,7 +110,7 @@ include "header.php";
                     ?>
                 <tr>
                     <th colspan="2"><a href="<?php
-                        echo getUrl("teameditsite.php") ?>">Team</a></th>
+                        echo $website->getUrl("teameditsite.php") ?>">Team</a></th>
                 </tr>
             </table>
         </div>

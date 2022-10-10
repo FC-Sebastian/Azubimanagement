@@ -1,22 +1,23 @@
 <?php
 
 session_start();
-include "functions.php";
-$title = "Login";
-$hashpass = addSaltGetMD5(getRequestParameter("loginpass"));
-if (validateAzubiLogin(getRequestParameter("loginemail"), $hashpass)) {
+include "classes/Loginsite.php";
+$website = new Loginsite();
+$title = $website->getTitle();
+$hashpass = $website->getHashedPass();
+if ($website->validateAzubiLogin($website->getRequestParameter("loginemail"), $hashpass)) {
     $_SESSION["logintime"] = time();
     if (isset($_SESSION["origin"])) {
-        header("location: " . getUrl("") . str_replace("azubimanagement/", "", $_SESSION["origin"]));
+        header("location: " . $website->getUrl("") . str_replace("azubimanagement/", "", $_SESSION["origin"]));
     } else {
-        header("location: " . getUrl("teameditsite.php"));
+        header("location: " . $website->getUrl("teameditsite.php"));
     }
 }
 include "header.php";
 ?>
 <div id="logindiv">
     <form method="post" action="<?php
-    echo getUrl("loginsite.php") ?>">
+    echo $website->getUrl("loginsite.php") ?>">
         <table id="logintable">
             <tr>
                 <th colspan="2">

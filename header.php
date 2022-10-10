@@ -10,7 +10,7 @@
         ?>
     </title>
     <link rel="stylesheet" href="<?php
-    echo getUrl("style.css") ?>">
+    echo $website->getUrl("style.css") ?>">
 </head>
 <body>
     <div class="all">

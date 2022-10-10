@@ -27,4 +27,22 @@ class dbconnection
         }
         return self::$instance->connection;
     }
+    public static function executeMySQLQuery($query)
+    {
+        if (self::$instance === null) {
+            self::$instance = new dbconnection(
+                conf::getParam("dbhost"),
+                conf::getParam("dbuser"),
+                conf::getParam("dbpass"),
+                conf::getParam("db")
+            );
+        }
+        $result = mysqli_query(dbconnection::getDbConnection(), $query);
+        $error = mysqli_error(dbconnection::getDbConnection());
+        if (!empty($error)) {
+            echo "<h1>Error with query: " . $query . " <br> Error:" . $error . "</h1>";
+        }
+        #echo $query."<br>";
+        return $result;
+    }
 }

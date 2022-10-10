@@ -1,7 +1,8 @@
 <?php
 
-include "functions.php";
-$allazubi = getAzubiData();
+include "classes/Teamsite.php";
+$website = new Teamsite();
+$allazubi = $website->getAzubiData();
 include "header.php";
 ?>
 <div class="teamboxes">
@@ -9,10 +10,10 @@ include "header.php";
     foreach ($allazubi as $azu): ?>
         <div class="teambox">
             <a href="<?php
-            echo getUrl("mysite.php") ?>?id=<?php
+            echo $website->getUrl("mysite.php") ?>?id=<?php
             echo $azu->getId() ?>">
                 <img class="teampic" src=<?php
-                echo getPictureUrl($azu->getPicurl()) ?>
+                echo $website->getPictureUrl($azu->getPicurl()) ?>
                 >
             </a>
             <br>

@@ -1,9 +1,8 @@
 <?php
 
-include "functions.php";
-include_once "classes/dbconnection.php";
-$con = dbconnection::getDbConnection();
-$azubiid = getRequestParameter("id", 1);
+include "classes/Azubisite.php";
+$website = new Azubisite();
+$azubiid = $website->getRequestParameter("id", 1);
 $azubidata = new azubi();
 $azubidata->load($azubiid);
 ?>
@@ -22,10 +21,10 @@ include "header.php"
     <div class="top">
         <a href="https://www.fatchip.de/" target="_blank">
             <img id="logo" src="<?php
-            echo getUrl("pics/fatchip-logo.svg") ?>" alt="Logo fehlt">
+            echo $website->getUrl("pics/fatchip-logo.svg") ?>" alt="Logo fehlt">
         </a>
         <img id="pic" src=<?php
-        echo getPictureUrl($azubidata->getPicurl()) ?>>
+        echo $website->getPictureUrl($azubidata->getPicurl()) ?>>
         <br><br><br>
         <h1>
             <?php
@@ -55,7 +54,7 @@ include "header.php"
         <?php
         endif ?>
         <div id="since"> <?php
-            echo timeSince($employmentstart) ?> </div>
+            echo $website->timeSince($employmentstart) ?> </div>
     </div>
     <div class="lists">
         <?php
@@ -90,7 +89,7 @@ include "header.php"
         endif; ?>
         <div id="timeedit">
             <a href="<?php
-            getUrl("inputsite.php") ?>?id=<?php
+            $website->getUrl("inputsite.php") ?>?id=<?php
             echo $azubidata->getId() ?>">edit <?php
                 echo $azubidata->getName() ?></a>
             <div><?php
@@ -99,5 +98,4 @@ include "header.php"
     </div>
 <?php
 include "footer.php";
-mysqli_close($con);
 ?>
