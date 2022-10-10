@@ -5,11 +5,23 @@ class Loginsite extends Website
 {
     protected $title = "Login";
 
-    public function getHashedPass()
+    public function validateLoginAndRedirect()
+    {
+        if ($this->validateAzubiLogin($this->getRequestParameter("loginemail"), $this->getHashedPass())) {
+            $_SESSION["logintime"] = time();
+            if (isset($_SESSION["origin"])) {
+                header("location: " . $this->getUrl("") . str_replace("azubimanagement/", "", $_SESSION["origin"]));
+            } else {
+                header("location: " . $this->getUrl("teameditsite.php"));
+            }
+        }
+    }
+
+    protected function getHashedPass()
     {
         return $this->addSaltGetMD5($this->getRequestParameter("loginpass"));
     }
-    public function validateAzubiLogin($email, $password)
+    protected function validateAzubiLogin($email, $password)
     {
         if (!empty($email)) {
             $query = "SELECT email, password FROM azubi WHERE email = '$email' AND password = '$password'";

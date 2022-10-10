@@ -4,15 +4,7 @@ session_start();
 include "classes/Loginsite.php";
 $website = new Loginsite();
 $title = $website->getTitle();
-$hashpass = $website->getHashedPass();
-if ($website->validateAzubiLogin($website->getRequestParameter("loginemail"), $hashpass)) {
-    $_SESSION["logintime"] = time();
-    if (isset($_SESSION["origin"])) {
-        header("location: " . $website->getUrl("") . str_replace("azubimanagement/", "", $_SESSION["origin"]));
-    } else {
-        header("location: " . $website->getUrl("teameditsite.php"));
-    }
-}
+$website->validateLoginAndRedirect();
 include "header.php";
 ?>
 <div id="logindiv">
