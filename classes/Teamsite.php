@@ -1,7 +1,6 @@
 <?php
 
-include "Website.php";
-class Teamsite extends Website
+class Teamsite extends AzubiDatasite
 {
-
+    protected $title = "Azubi-Team";
 }

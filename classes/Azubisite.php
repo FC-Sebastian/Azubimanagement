@@ -1,9 +1,8 @@
 <?php
 
-include "Website.php";
 class Azubisite extends Website
 {
-    function timeSince($input)
+    public function timeSince($input)
     {
         $date = ((time() - strtotime($input)) / 60 / 60 / 24);
         $yrs = 0;
@@ -32,5 +31,21 @@ class Azubisite extends Website
             $output .= " und " . $yrs . " Jahren";
         }
         return $output;
+    }
+
+    public function checkId($azubidata)
+    {
+        if (empty($azubidata->getId())): ?>
+            <div style="text-align: center; font: 60px 'impact'; color: red; position: relative; top: 40%">
+                <b>DIE ANGEGEBENE AZUBI-ID IST NICHT VERGEBEN!</b>
+            </div>
+            <?php
+            exit;
+        endif;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 }

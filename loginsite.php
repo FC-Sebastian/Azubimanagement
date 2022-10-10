@@ -1,15 +1,14 @@
 <?php
 
 session_start();
-include "classes/Loginsite.php";
+include "functions.php";
 $website = new Loginsite();
 $title = $website->getTitle();
 $website->validateLoginAndRedirect();
 include "header.php";
 ?>
 <div id="logindiv">
-    <form method="post" action="<?php
-    echo $website->getUrl("loginsite.php") ?>">
+    <form method="post" action="<?php echo $website->getUrl("loginsite.php") ?>">
         <table id="logintable">
             <tr>
                 <th colspan="2">

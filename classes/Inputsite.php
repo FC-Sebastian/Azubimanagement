@@ -1,27 +1,56 @@
 <?php
 
-include "Website.php";
 class Inputsite extends Website
 {
-    public function evaluateInput(){
-        if ($this->getRequestParameter("pass") === $this->getRequestParameter("confpass") && $this->getRequestParameter("pass") !== false) {
-            $password = $this->addSaltGetMD5($this->getRequestParameter("pass"));
-        } else {
-            header("location: " . $this->getUrl("inputsite.php") . "?passmismatch=1&id=" . $this->getRequestParameter("id"));
-            exit();
+    protected $title = "New Azubi";
+
+    public function evaluateRequest()
+    {
+        if (!empty($_POST)) {
+            if ($this->getRequestParameter("pass") === $this->getRequestParameter("confpass") && $this->getRequestParameter("pass") !== false) {
+                $password = $this->addSaltGetMD5($this->getRequestParameter("pass"));
+            } else {
+                $this->redirect("?passmismatch=1&id=" . $this->getRequestParameter("id"));
+            }
+            if (!empty($this->getRequestParameter("delete")) && $this->getRequestParameter("delete") == "on") {
+                $azubi = new azubi($this->getRequestParameter("id"));
+                $azubi->delete();
+                $this->redirect();
+            } elseif (!empty($this->getRequestParameter("id"))) {
+                $this->saveAzubi($password);
+                $this->redirect();
+            } else {
+                $this->saveAzubi($password);
+                $this->redirect();
+            }
+            echo "i pooped";
         }
-        if (!empty($this->getRequestParameter("delete")) && $this->getRequestParameter("delete") == "on") {
-            $azubi = new azubi($this->getRequestParameter("id"));
-            $azubi->delete();
-            header("location: " . $this->getUrl("inputsite.php"));
-        } elseif (!empty($this->getRequestParameter("id"))) {
-            $this->saveAzubi($password);
-            header("location: " . $this->getUrl("inputsite.php"));
-        } else {
-            $this->saveAzubi($password);
-            header("location: " . $this->getUrl("inputsite.php"));
+    }
+
+    public function loadAzubiSetTitle($id=false)
+    {
+        $azubi = new azubi();
+        if (!empty($id)) {
+            $azubi->load($id);
+            $this->title = $azubi->getName();
         }
-        echo "i pooped";
+        return $azubi;
+    }
+
+    public function getNameIfNotEmpty($azubi)
+    {
+        if (!empty($azubi->getName())) {
+            return $azubi->getName();
+        } else {
+            return "New Azubi";
+        }
+    }
+
+    public function implodeSkills($skills)
+    {
+        if (!empty($skills)) {
+            echo implode(", ", $skills);
+        }
     }
 
     protected function uploadPictureGetFilename()
@@ -38,6 +67,7 @@ class Inputsite extends Website
         }
         return null;
     }
+
     protected function saveAzubi($password)
     {
         $azubi = new azubi(
@@ -55,4 +85,9 @@ class Inputsite extends Website
         $azubi->save();
     }
 
+    protected function redirect($parameters = "")
+    {
+        header("location: " . $this->getUrl("inputsite.php").$parameters);
+        exit();
+    }
 }

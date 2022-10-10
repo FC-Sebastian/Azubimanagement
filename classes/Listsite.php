@@ -1,88 +1,86 @@
 <?php
 
-include "Website.php";
-class Listsite extends Website
+class Listsite extends AzubiDatasite
 {
     protected $limit;
     protected $offset;
     protected $page;
-    protected $pagei = 1;
-    protected $ddoptions = [1, 5, 10, 20];
     protected $title = "back-end liste";
-
-    public function __construct()
-    {
-        include "conf.php";
-        include "dbconnection.php";
-        include "azubi.php";
-        $this->setLimit();
-        $this->setPage();
-        $this->setOffset($this->getPage(),$this->getLimit());
-    }
 
     public function evaluateRequest()
     {
-        if (!empty($this->getRequestParameter("delete"))) {
-            $this->deleteSingleAzubi();
-        }
-        if (!empty($this->getRequestParameter("newazubi"))) {
-            header("location: " . $this->getUrl("inputsite.php"));
-        }
-        if ($this->getRequestParameter("deletearray") !== false  && $this->getRequestParameter("deleteselected") == "ausgewählte Azubis löschen") {
-            $this->deleteMultiplAzubis();
-        }
-        if (!empty($this->getRequestParameter("submitsearch"))) {
-            $this->getLocationStringAndRedirect(
-                1,
-                $this->getRequestParameter("dropdown"),
-                $this->getRequestParameter("search"),
-                $this->getRequestParameter("order"),
-                $this->getRequestParameter("orderdir")
-            );
-        }
-        if (!empty($this->getRequestParameter("ddsubmit"))) {
-            $this->getLocationStringAndRedirect(
-                1,
-                $this->getRequestParameter("dropdown"),
-                $this->getRequestParameter("lastsearch"),
-                $this->getRequestParameter("order"),
-                $this->getRequestParameter("orderdir")
-            );
-        }
-        if (!empty($this->getRequestParameter("pageselect"))) {
-            $this->getLocationStringAndRedirect(
-                $this->getRequestParameter("pageselect"),
-                $this->getRequestParameter("dropdown"),
-                $this->getRequestParameter("lastsearch"),
-                $this->getRequestParameter("order"),
-                $this->getRequestParameter("orderdir")
-            );
+        if (!empty($_REQUEST)) {
+            if (!empty($this->getRequestParameter("delete"))) {
+                $this->deleteSingleAzubi();
+            }
+            if (!empty($this->getRequestParameter("newazubi"))) {
+                header("location: " . $this->getUrl("inputsite.php"));
+            }
+            if ($this->getRequestParameter("deletearray") !== false && $this->getRequestParameter(
+                    "deleteselected"
+                ) == "ausgewählte Azubis löschen") {
+                $this->deleteMultiplAzubis();
+            }
+            if (!empty($this->getRequestParameter("submitsearch"))) {
+                $this->getLocationStringAndRedirect(
+                    1,
+                    $this->getRequestParameter("dropdown"),
+                    $this->getRequestParameter("search"),
+                    $this->getRequestParameter("order"),
+                    $this->getRequestParameter("orderdir")
+                );
+            }
+            if (!empty($this->getRequestParameter("ddsubmit"))) {
+                $this->getLocationStringAndRedirect(
+                    1,
+                    $this->getRequestParameter("dropdown"),
+                    $this->getRequestParameter("lastsearch"),
+                    $this->getRequestParameter("order"),
+                    $this->getRequestParameter("orderdir")
+                );
+            }
+            if (!empty($this->getRequestParameter("pageselect"))) {
+                $this->getLocationStringAndRedirect(
+                    $this->getRequestParameter("pageselect"),
+                    $this->getRequestParameter("dropdown"),
+                    $this->getRequestParameter("lastsearch"),
+                    $this->getRequestParameter("order"),
+                    $this->getRequestParameter("orderdir")
+                );
+            }
         }
     }
+
     public function getPageMax($limit, $azubidata)
     {
         $allazubicount = count($azubidata);
         return ceil($allazubicount / $limit);
     }
+
     public function getLimit()
     {
+        $this->limit = $this->getRequestParameter("dropdown", 10);
         return $this->limit;
     }
+
     public function getOffset()
     {
+        $offset = ($this->getPage() - 1) * $this->getLimit();
+        if ($offset < 0) {
+            $offset = 0;
+        }
+        $this->offset = $offset;
         return $this->offset;
     }
+
     public function getPage()
     {
+        $page = $this->getRequestParameter("page", 1);
+        if ($page < 1) {
+            $page = 1;
+        }
+        $this->page = $page;
         return $this->page;
-    }
-    public function getDd()
-    {
-        return $this->ddoptions;
-    }
-    public function getPageI()
-    {
-        return $this->pagei;
     }
 
     protected function getLocationStringAndRedirect(
@@ -107,6 +105,24 @@ class Listsite extends Website
         }
         header($locationstring);
     }
+
+    public function getPaginationUrl($direction = 1)
+    {
+        $string = $this->getUrl("teameditsite.php")."?page=".
+            ($this->getPage() + (1 * $direction))."&order=".$this->getRequestParameter("order").
+            "&orderdir=".$this->getRequestParameter("orderdir",0)."&dropdown=".
+            $this->getLimit()."&search=".$this->getRequestParameter("search");
+        return $string;
+    }
+
+    public  function getOrderUrl($order)
+    {
+        $string = $this->getUrl("teameditsite.php")."?order=".$order."&orderdir=".
+            ($this->getRequestParameter("orderdir", -1) * -1)."&page=".$this->getPage().
+            "&dropdown=".$this->getLimit()."&search=".$this->getRequestParameter("search");
+        return $string;
+    }
+
     protected function deleteSingleAzubi()
     {
         $azubi = new azubi();
@@ -119,6 +135,7 @@ class Listsite extends Website
             $this->getRequestParameter("orderdir")
         );
     }
+
     protected function deleteMultiplAzubis()
     {
         foreach ($this->getRequestParameter("deletearray") as $id) {
@@ -133,24 +150,5 @@ class Listsite extends Website
             $this->getRequestParameter("orderdir")
         );
     }
-    protected function setLimit()
-    {
-        $this->limit = $this->getRequestParameter("dropdown", 10);
-    }
-    protected function setOffset($page,$limit)
-    {
-        $offset = ($page - 1) * $limit;
-        if ($offset < 0) {
-            $offset = 0;
-        }
-        $this->offset = $offset;
-    }
-    protected function setPage()
-    {
-        $page = $this->getRequestParameter("page", 1);
-        if ($page < 1) {
-            $page = 1;
-        }
-        $this->page = $page;
-    }
+
 }

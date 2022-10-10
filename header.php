@@ -3,10 +3,7 @@
 <head>
     <title>
         <?php
-        if (!isset($title)) {
-            $title = "Azubi-Team";
-        }
-        echo $title;
+        echo $website->getTitle();
         ?>
     </title>
     <link rel="stylesheet" href="<?php

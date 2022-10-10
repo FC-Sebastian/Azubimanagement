@@ -1,73 +1,51 @@
 <?php
 
-include "classes/Inputsite.php";
-$title = "new Azubi";
+include "functions.php";
 $website = new Inputsite();
 include "session.php";
 $_SESSION["origin"] = $_SERVER["PHP_SELF"];
-$azubidata = $website->getAzubiData();
 $azubiid = $website->getRequestParameter("id");
-$azubi = new azubi;
-if (!empty($_POST)){
-    $website->evaluateInput();
-}
-if (!empty($azubiid)) {
-    $azubi->load($azubiid);
-    $title = $azubi->getName();
-}
+$azubi = new azubi();
+$website->evaluateRequest();
+$azubi = $website->loadAzubiSetTitle($azubiid);
 include "header.php";
 ?>
-    <form action="<?php
-    echo $website->getUrl("inputsite.php") ?>" enctype='multipart/form-data' method="post">
-        <input id="hideme" type="hidden" name="id" value="<?php
-        echo $azubiid ?>">
+    <form action="<?php echo $website->getUrl("inputsite.php") ?>" enctype='multipart/form-data' method="post">
+        <input id="hideme" type="hidden" name="id" value="<?php echo $azubiid ?>">
         <div class="azuinfo">
             <h1>
-                <?php
-                if (!empty($azubiid)) {
-                    echo $azubi->getName();
-                } else {
-                    echo "New Azubi";
-                }
-                ?>
+                <?php echo $website->getNameIfNotEmpty($azubi) ?>
             </h1>
             <br>
             <div>
                 <label for="name">Full Name: </label>
-                <input type="text" name="name" value="<?php
-                echo $azubi->getName() ?>"><br>
+                <input type="text" name="name" value="<?php echo $azubi->getName() ?>"><br>
             </div>
             <div>
                 <label for="birthday">Date of birth: </label>
-                <input type="date" name="birthday" value="<?php
-                echo $azubi->getBday() ?>"><br>
+                <input type="date" name="birthday" value="<?php echo $azubi->getBday() ?>"><br>
             </div>
             <div>
                 <label for="email">E-Mail: </label>
-                <input type="text" name="email" value="<?php
-                echo $azubi->getEmail() ?>"><br>
+                <input type="text" name="email" value="<?php echo $azubi->getEmail() ?>"><br>
             </div>
             <div>
                 <label for="githubuser">GitHub username: </label>
-                <input type="text" name="githubuser" value="<?php
-                echo $azubi->getGithub() ?>"><br>
+                <input type="text" name="githubuser" value="<?php echo $azubi->getGithub() ?>"><br>
             </div>
             <div>
                 <label for="employmentstart">Employed since: </label>
-                <input type="date" name="employmentstart" value="<?php
-                echo $azubi->getEmploystart() ?>"><br>
+                <input type="date" name="employmentstart" value="<?php echo $azubi->getEmploystart() ?>"><br>
             </div>
             <div>
                 <label for="pictureurl">Picture: </label>
                 <input type="file" name="pictureurl"><br>
             </div>
-            <?php
-            if ($website->getRequestParameter("passmismatch") == 1): ?>
+            <?php if ($website->getRequestParameter("passmismatch") == 1): ?>
                 <div>
                     <p><b>Passwords didn't match</b></p>
                 </div>
-            <?php
-            endif; ?>
+            <?php endif; ?>
             <div>
                 <label for="pass">Password: </label>
                 <input name="pass" type="password">
@@ -80,37 +58,17 @@ include "header.php";
         <div class="azubilinks">
             <table id="inputtable">
                 <tr>
-                    <th colspan="2"><a href="<?php
-                        echo $website->getUrl("inputsite.php") ?>">New Azubi</a></th>
+                    <th colspan="2">
+                        <a href="<?php echo $website->getUrl("inputsite.php") ?>">
+                            New Azubi</a>
+                    </th>
                 </tr>
                 <tr>
-                    <?php
-                    $jimmy = 0;
-                    foreach ($azubidata
-
-                    as $adata):
-                    $azubii = new azubi($adata->getId(), $adata->getName());
-                    if ($jimmy === 2):
-                    ?>
-                </tr>
-                <tr>
-                    <?php
-                    $jimmy -= 2;
-                    endif;
-                    ?>
-                    <td>
-                        <a href="<?php
-                        echo $website->getUrl("inputsite.php") ?>?id=<?php
-                        echo $azubii->getId() ?>"><?php
-                            echo $azubii->getName() ?></a>
-                    </td>
-                    <?php
-                    $jimmy++;
-                    endforeach;
-                    ?>
-                <tr>
-                    <th colspan="2"><a href="<?php
-                        echo $website->getUrl("teameditsite.php") ?>">Team</a></th>
+                    <th colspan="2">
+                        <a href="<?php echo $website->getUrl("teameditsite.php") ?>">
+                            Team
+                        </a>
+                    </th>
                 </tr>
             </table>
         </div>
@@ -121,18 +79,12 @@ include "header.php";
             <div>
                 <label for="kskills">Known Skills (seperate by comma)</label>
                 <br>
-                <textarea name="kskills" rows="5" cols="60"><?php
-                    if (!empty($azubi->getPreskills())) {
-                        echo implode(", ", $azubi->getPreskills());
-                    } ?></textarea>
+                <textarea name="kskills" rows="5" cols="60"><?php $website->implodeSkills($azubi->getPreskills()) ?></textarea>
             </div>
             <div>
                 <label for="nskills">New Skills (seperate by comma)</label>
                 <br>
-                <textarea name="nskills" rows="5" cols="60"><?php
-                    if (!empty($azubi->getPreskills())) {
-                        echo implode(", ", $azubi->getNewskills());
-                    } ?></textarea>
+                <textarea name="nskills" rows="5" cols="60"><?php $website->implodeSkills($azubi->getNewskills()) ?></textarea>
             </div>
         </div>
         <div class="buttons">
@@ -140,12 +92,10 @@ include "header.php";
                 <input type="submit" value="Send">
             </div>
             <div>
-                <?php
-                if (!empty($azubiid)): ?>
+                <?php if (!empty($azubiid)): ?>
                     <label>Delete Azubi?</label>
                     <input type="checkbox" name="delete">
-                <?php
-                endif; ?>
+                <?php endif; ?>
             </div>
         </div>
     </form>

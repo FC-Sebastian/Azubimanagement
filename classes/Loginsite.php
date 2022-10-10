@@ -1,6 +1,5 @@
 <?php
 
-include "Website.php";
 class Loginsite extends Website
 {
     protected $title = "Login";
