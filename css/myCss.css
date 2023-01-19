@@ -1,0 +1,10 @@
+#tableForm .row:nth-of-type(odd){
+    background-color: #C2DBFE;
+}
+#tableForm .row:nth-of-type(even){
+    background-color: #86B6FE;
+}
+.searchListItem:hover {
+    background-color: #E6F0FE;
+    cursor: pointer;
+}

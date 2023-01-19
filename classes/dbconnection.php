@@ -1,48 +1,40 @@
 <?php
 
-class dbconnection
-{
-    private static $instance = null;
-    private $connection;
 
-    private function __construct($hostname, $username, $password, $db)
-    {
-        $connection = new mysqli($hostname, $username, $password, $db);
-        if ($connection->connect_error) {
-            echo "fail " . $connection->connect_error;
-            exit();
-        }
-        $this->connection = $connection;
-    }
+class DbConnection
+{
+    protected static $conn = null;
 
     public static function getDbConnection()
     {
-        if (self::$instance === null) {
-            self::$instance = new dbconnection(
-                conf::getParam("dbhost"),
-                conf::getParam("dbuser"),
-                conf::getParam("dbpass"),
-                conf::getParam("db")
+        if (self::$conn === null) {
+            mysqli_report(MYSQLI_REPORT_STRICT);
+            self::$conn = mysqli_connect(
+                Conf::getParam("dbhost"),
+                Conf::getParam("dbuser"),
+                Conf::getParam("dbpass"),
+                Conf::getParam("db")
             );
+            if (self::$conn->connect_error) {
+                throw new Exception("Connection failed: " . mysqli_connect_error());
+            }
         }
-        return self::$instance->connection;
+        return self::$conn;
     }
-    public static function executeMySQLQuery($query)
+
+    /**
+     * @param $query
+     * @return bool|mysqli_result
+     * @throws Exception
+     */
+    public static function executeMysqlQuery($query)
     {
-        if (self::$instance === null) {
-            self::$instance = new dbconnection(
-                conf::getParam("dbhost"),
-                conf::getParam("dbuser"),
-                conf::getParam("dbpass"),
-                conf::getParam("db")
-            );
-        }
-        $result = mysqli_query(dbconnection::getDbConnection(), $query);
-        $error = mysqli_error(dbconnection::getDbConnection());
+        $result = mysqli_query(self::getDbConnection(), $query);
+        $error = mysqli_error(self::getDbConnection());
         if (!empty($error)) {
-            echo "<h1>Error with query: " . $query . " <br> Error:" . $error . "</h1>";
+            throw new Exception("MYSQL-Error: " . $error . " in Query: " . $query);
         }
-        #echo $query."<br>";
+        //echo "<br>",$query,"<br>";
         return $result;
     }
 }

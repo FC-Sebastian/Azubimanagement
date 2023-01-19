@@ -1,6 +1,6 @@
 <?php
 
-class conf
+class Conf
 {
     private static $confarray = null;
 
@@ -18,5 +18,4 @@ class conf
         }
         return false;
     }
-
 }
