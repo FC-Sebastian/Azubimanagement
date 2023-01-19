@@ -23,7 +23,8 @@ searchbar.on("input",function () {
  */
 function searchAutoComplete() {
     if (searchbar.val().length > 1) {
-        $.post("http://localhost/azubiFramework/index.php", "search=" + searchbar.val() + "&controller=SearchbarController", function (result) {
+        let params = {"search" : searchbar.val(), "controller" : "SearchbarController"};
+        $.post("http://localhost/azubiFramework/index.php", params, function (result) {
             searchbarList.html(getListItemsString(result));
         });
     } else {
@@ -66,7 +67,8 @@ function executeSearch(search) {
  */
 function deleteAzubi(id,element,page) {
 
-    $.post("http://localhost/azubiFramework/index.php", "id=" + id + "&controller=AjaxDelete",function (){
+    let params = {"id" : id, "&controller" : "AjaxDelete"}
+    $.post("http://localhost/azubiFramework/index.php", params,function (){
         let offset = tableForm.children().length - 2;
         if (page > 1) {
             offset = (page * offset) + (page - 1);
@@ -104,9 +106,10 @@ function loadAzubi(limit, offset) {
     let search = hiddenInputs.find(":nth-child(2)").val();
     let order = hiddenInputs.find(":nth-child(3)").val();
     let orderdir = hiddenInputs.find(":last-child").val();
+    let params = {"controller":"AjaxTableGenerator", "tableLength":limit, "offset":offset, "search":search, "order":order, "orderdir":orderdir, "page":page}
 
     $.post("http://localhost/azubiFramework/index.php",
-        "controller=AjaxTableGenerator&tableLength="+limit+ "&offset="+offset+"&search="+search+"&order="+order+"&orderdir="+orderdir+"&page="+page,
+        params,
         function (result){
             let responseArray = JSON.parse(result);
             for (let i = 0; i < responseArray.length; i++) {

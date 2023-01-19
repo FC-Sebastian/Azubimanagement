@@ -67,7 +67,12 @@ function getInputGroupDiv(type, labelText, inputName) {
  */
 function deleteSkill(type,skill,button) {
     let id = $("#id").val();
-    $.post("http://localhost/azubiFramework/index.php", "id=" + id + "&type=" + type + "&skill=" + skill + "&controller=AjaxDeleteSkill");
+    let params = {
+        "type":"POST",
+        "data":{"id":id , "type":type , "skill":skill , "controller":"AjaxDeleteSkill"}
+    };
+    $.ajax("http://localhost/azubiFramework/index.php", params);
+
     removeParent(button);
 }
 
